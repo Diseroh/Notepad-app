@@ -5,6 +5,8 @@ const apiRouters = require("./routes/api.js");
 
 //routes
 app.use("/", apiRouters);
+//data base initialization
+require("./db/mongoose.js");
 
 //serwer
 app.listen(port, () => {

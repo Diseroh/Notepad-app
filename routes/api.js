@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const testControls = require("../constrols/api/test.js");
+const notesControls = require("../controls/api/notes.js");
 
-router.get("/", testControls.homepage);
+router.get("/", notesControls.saveNote);
 
 module.exports = router;
