@@ -1,31 +1,57 @@
 const Note = require("../../db/models/note.js");
 //Actions
 module.exports = {
-  saveNote: (request, response) => {
-    //const newNote = new Note({
-    //title: "test 4 ",
-    //content: "test 4 ",
-    //});
-
-    //newNote.save().then(() => {
-    //console.log("powiodło się znowu ");
-    //});
+  //create a note
+  saveNote: async (request, response) => {
     const title = request.body.title;
     const content = request.body.content;
+    let note;
 
-    response.send("zapis działa " + title + "content: " + content);
+    try {
+      note = new Note({
+        title: title,
+        content: content,
+      });
+      await note.save();
+    } catch (error) {
+      return response.status(422).json({ message: error.message });
+    }
+
+    response.status(200).json(note);
   },
-  getAllNotes: (request, response) => {
-    response.send("pobieranie działa!");
+  //Download all Notes
+  getAllNotes: async (request, response) => {
+    let doc;
+    try {
+      doc = await Note.find({});
+    } catch (error) {
+      return response.status(500).json({ message: error.message });
+    }
+    response.status(200).json(doc);
   },
-  getNote: (request, response) => {
-    response.send("pobieranie jednej działa!");
-  },
-  updateNote: (request, response) => {
-    response.send("edycja działa!");
-  },
-  deleteNote: (request, response) => {
+  //Download a note
+  getNote: async (request, response) => {
     const id = request.params.id;
-    response.send("usuwanie działa! ID: " + id);
+    const note = await Note.findOne({ _id: id });
+    response.status(201).json(note);
+  },
+  //Update note
+  updateNote: async (request, response) => {
+    const id = request.params.id;
+    const title = request.body.title;
+    const content = request.body.content;
+    const note = await Note.findOne({ _id: id });
+    note.title = title;
+    note.content = content;
+    await note.save();
+
+    response.status(201).json(note);
+  },
+  //Delete note
+  deleteNote: async (request, response) => {
+    const id = request.params.id;
+    await Note.deleteOne({ _id: id });
+
+    response.sendStatus(204);
   },
 };
